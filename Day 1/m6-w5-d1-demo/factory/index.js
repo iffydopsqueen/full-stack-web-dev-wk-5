@@ -14,3 +14,5 @@ const myTablet = gadgetFactory.createGadget("Tablet", {
 });
 
 // add console.log here
+console.log(myLaptop);
+console.log(myTablet);
