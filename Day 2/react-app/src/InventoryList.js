@@ -15,11 +15,18 @@ class InventoryList extends Component {
     // fetch data from the database once this 'InventoryList' component has been mounted
     componentDidMount() {
         this.setState({isLoading: true});
-
-        fetch("api/inventories")
+    
+        fetch("/api/inventories")
             .then(response => response.json())
-            .then(data => this.setState({inventories: data, isLoading: false}));
-    }
+            .then(data => {
+                console.log("Data from API:", data); // Add this line
+                this.setState({inventories: data, isLoading: false});
+            })
+            .catch(error => {
+                console.error("Error fetching data:", error); // Add this line
+                this.setState({isLoading: false});
+            });
+    }    
 
     // removes inventory 
     removeInv = async (id) => {
@@ -29,7 +36,7 @@ class InventoryList extends Component {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             }
-        })
+        });
             console.log("Remove Done!");
             // update inventory state minus removed item 
             let updatedInventories = [...this.state.inventories].filter(i => i._id !== id);
