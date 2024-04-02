@@ -19,21 +19,23 @@ function Lists(props) {
             </thead>
             <tbody>
                 {alldata.map(item => (
-                    <tr key={item.id}>
-                        <td>{item.id}</td>
+                    <tr key={item._id}>
+                        <td>{item._id}</td>
                         <td>{item.title}</td>
                         <td>{item.author}</td>
                         <td>
                             <UpdateList
-                                item={item} // Pass the data of the specific item being updated
+                                item={item}
                                 updateList={updateList}
                                 handleChange={handleChange}
+                                reloadLists={props.reloadLists}
                             />
                         </td>
                         <td>
+                            {/* Pass singledata and other props to DeleteList */}
                             <DeleteList
-                                elementId={item.id}
-                                singledata={props.singledata}
+                                elementId={item._id}
+                                singledata={props.singledata} 
                                 getList={props.getList}
                                 deleteList={props.deleteList}
                             />

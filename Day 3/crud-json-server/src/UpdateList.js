@@ -21,7 +21,7 @@ function UpdateList(props) {
     };    
 
     const updateList = () => {
-        fetch(`http://localhost:5000/posts/${props.item.id}`, {
+        fetch(`/api/books/${props.item._id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"
@@ -32,7 +32,7 @@ function UpdateList(props) {
         .then(result => {
             console.log("Item updated successfully:", result);
             handleClose(); // Close the modal
-            props.updateList(props.item.id, formData); // Pass updated data to the updateList function
+            props.updateList(props.item._id, formData); // Pass updated data to the updateList function
             
             // Trigger the reload of lists by calling a callback function provided by the parent component
             props.reloadLists(); 

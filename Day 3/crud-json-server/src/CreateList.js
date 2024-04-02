@@ -3,9 +3,41 @@ import { Modal, Button } from "react-bootstrap";
 
 function CreateList(props) {
     const [show, setShow] = useState(false);
+    const [formData, setFormData] = useState({
+        title: "",
+        author: ""
+    });
 
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
+
+    const handleChange = (event) => {
+        const { name, value } = event.target;
+        setFormData({
+            ...formData,
+            [name]: value
+        });
+    };
+
+    const createList = () => {
+        fetch("/api/books", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(res => res.json())
+        .then(result => {
+            console.log("Item created successfully:", result);
+            handleClose();
+            props.reloadLists(); // Reload the lists after successful creation
+        })
+        .catch(error => {
+            console.error("Error creating item:", error);
+            handleClose();
+        });
+    };
 
     return (
         <React.Fragment>
@@ -21,16 +53,16 @@ function CreateList(props) {
                         type="text"
                         placeholder="Title" 
                         name="title" 
-                        value={props.singledata.title}
-                        onChange={props.handleChange} 
+                        value={formData.title}
+                        onChange={handleChange} 
                         className="d-block my-3" 
                     />
                     <input 
                         type="text"
                         placeholder="Author" 
                         name="author" 
-                        value={props.singledata.author}
-                        onChange={props.handleChange} 
+                        value={formData.author}
+                        onChange={handleChange} 
                         className="d-block my-3" 
                     />
                 </Modal.Body>
@@ -40,10 +72,7 @@ function CreateList(props) {
                     </Button>
                     <Button 
                         variant="primary" 
-                        onClick={() => {
-                            handleClose();
-                            props.createList();
-                        }}
+                        onClick={createList}
                     >
                         Create
                     </Button>
