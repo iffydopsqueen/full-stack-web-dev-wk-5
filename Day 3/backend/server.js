@@ -1,6 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+
+// SSL modules
+const https = require("https");
+const fs = require("fs");
+
 const app = express();
 
 app.use(bodyParser.json());
@@ -25,10 +30,21 @@ mongoose.connection
 
 require("./app/routes/book.router.js")(app);
 
-// Create the web server
-const server = app.listen(5000, function() {
-    const host = server.address().address;
-    const port = server.address().port;
+// To generate the self-signed certificate & private key 
+// openssl req -x509 -newkey rsa:2048 -keyout server.key -out server.cert -nodes
 
-    console.log("App listening at http://%s:%s", host, port);
+// Load SSL certificate and private key 
+const credentials = {
+    key: fs.readFileSync('./https/server.key'),
+    cert: fs.readFileSync('./https/server.cert'),
+};
+  
+// Create the HTTPS server 
+const httpsServer = https.createServer(credentials, app);
+
+httpsServer.listen(5000, function() {
+    const host = httpsServer.address().address;
+    const port = httpsServer.address().port;
+
+    console.log("App listening at https://%s:%s", host, port);
 });
