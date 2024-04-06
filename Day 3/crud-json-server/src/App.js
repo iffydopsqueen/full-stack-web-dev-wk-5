@@ -56,7 +56,7 @@ class App extends Component {
             element={<Lists alldata={this.state.alldata} updateList={this.updateList} fetchData={() => this.fetchData()} />}
           />
           <Route path="/books/create" element={<CreateList reloadLists={() => this.fetchData()} navigateBack={this.navigateBackToList} />} />
-          <Route path="/books/update/:id" element={<UpdateList updateList={this.updateList} fetchData={() => this.fetchData()} />} />
+          <Route path="/books/update/:id" element={<UpdateList updateList={this.updateList} fetchData={() => this.fetchData()} navigateBack={this.navigateBackToList} />} />
           <Route path="/books/delete/:id" element={<DeleteList />} />
         </Routes>
       </Router>

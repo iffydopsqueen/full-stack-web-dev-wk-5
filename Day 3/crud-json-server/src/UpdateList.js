@@ -6,6 +6,8 @@ function UpdateList(props) {
   const [formData, setFormData] = useState({});
   const { id } = useParams();
 
+  const handleClose = () => props.navigateBack(); // Directly use navigateBack to go back
+
   useEffect(() => {
     // Fetch book data based on ID
     fetch(`/api/books/${id}`)
@@ -40,7 +42,8 @@ function UpdateList(props) {
       console.log("Item updated successfully:", result);
       props.updateList(id, formData);
       props.fetchData(); // Fetch updated data
-      props.toggle(); // Close the modal
+      window.location.reload(); // Reload the page
+      props.navigateBack(); // Navigate back to the book list
     } catch (error) {
       console.error("Error updating item:", error);
     }
@@ -79,7 +82,7 @@ function UpdateList(props) {
         <Button color="primary" type="submit" className="mt-3">
           Save
         </Button>{" "}
-        <Button color="secondary" className="mt-3" onClick={props.toggle}>
+        <Button color="secondary" className="mt-3" onClick={handleClose}>
           Cancel
         </Button>
       </Form>

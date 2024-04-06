@@ -1,86 +1,85 @@
 import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import { Button } from "react-bootstrap";
+import { Container, Form, FormGroup, Input, Label } from "reactstrap";
 
 function CreateList(props) {
-    const [show, setShow] = useState(false);
-    const [formData, setFormData] = useState({
-        title: "",
-        author: ""
+  const [formData, setFormData] = useState({
+    title: "",
+    author: ""
+  });
+
+  const handleClose = () => props.navigateBack(); // Directly use navigateBack to go back
+
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData({
+      ...formData,
+      [name]: value
     });
+  };
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+  const createList = (event) => {
+    event.preventDefault(); // Prevent the default form submission behavior
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData({
-            ...formData,
-            [name]: value
-        });
-    };
+    fetch("/api/books", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(formData)
+    })
+      .then(res => res.json())
+      .then(result => {
+        console.log("Item created successfully:", result);
+        props.reloadLists(); // Reload the lists after successful creation
+        handleClose(); // Navigate back to the book list
+      })
+      .catch(error => {
+        console.error("Error creating item:", error);
+      });
+  };
 
-    const createList = () => {
-        fetch("/api/books", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(res => res.json())
-        .then(result => {
-            console.log("Item created successfully:", result);
-            handleClose();
-            props.reloadLists(); // Reload the lists after successful creation
-            props.navigateBack(); // Navigate back to the book list
-        })
-        .catch(error => {
-            console.error("Error creating item:", error);
-            handleClose();
-        });
-    };
-
-    return (
-        <React.Fragment>
-            <Button variant="primary" onClick={handleShow}>
-                Add Book
-            </Button>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>New Book</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <input 
-                        type="text"
-                        placeholder="Title" 
-                        name="title" 
-                        value={formData.title}
-                        onChange={handleChange} 
-                        className="d-block my-3" 
-                    />
-                    <input 
-                        type="text"
-                        placeholder="Author" 
-                        name="author" 
-                        value={formData.author}
-                        onChange={handleChange} 
-                        className="d-block my-3" 
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={createList}
-                    >
-                        Create
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </React.Fragment>
-    );
+  return (
+    <React.Fragment>
+      <Container>
+        <h2 className="mt-3">Add Book</h2>
+        <Form onSubmit={createList}>
+          <FormGroup>
+            <Label for="title" className="h5 mt-3">
+              Book Title
+            </Label>
+            <Input
+              type="text"
+              placeholder="Title"
+              name="title"
+              value={formData.title}
+              onChange={handleChange}
+              className="d-block my-3"
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="author" className="h5 mt-3">
+              Author
+            </Label>
+            <Input
+              type="text"
+              placeholder="Author"
+              name="author"
+              value={formData.author}
+              onChange={handleChange}
+              className="d-block my-3"
+            />
+          </FormGroup>
+          <Button variant="primary" type="submit" className="mt-3">
+            Save
+          </Button>{" "}
+          <Button variant="secondary" className="mt-3" onClick={handleClose}>
+            Cancel
+          </Button>
+        </Form>
+      </Container>
+    </React.Fragment>
+  );
 }
 
 export default CreateList;
