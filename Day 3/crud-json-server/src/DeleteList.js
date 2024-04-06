@@ -1,66 +1,39 @@
-import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import React from "react";
+import { Button, Container, Form, FormGroup, Label } from "reactstrap";
 
 function DeleteList(props) {
-    const [show, setShow] = useState(false);
-
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
-
-    // Ensure singledata is available and contains title and author properties
-    const title = props.singledata ? props.singledata.title : "";
-    const author = props.singledata ? props.singledata.author : "";
-
     return (
-        <React.Fragment>
-            <Button
-                variant="primary"
-                onClick={(evt) => {
-                    handleShow();
-                    props.getList(evt, props.elementId);
-                }}
-            >
-                Delete
-            </Button>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Delete List</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {/* Use title and author variables */}
+        <Container>
+            <Form>
+                <FormGroup>
+                    <Label for="title" className="h5 mt-3">Title</Label>
                     <input 
                         type="text"
                         placeholder="Title" 
                         name="title" 
-                        value={title}
+                        value={props.singledata.title}
                         disabled={true}
-                        className="d-block my-3" 
+                        className="d-block my-3 form-control" 
                     />
+                </FormGroup>
+                <FormGroup>
+                    <Label for="author" className="h5 mt-3">Author</Label>
                     <input 
                         type="text"
                         placeholder="Author" 
                         name="author" 
-                        value={author}
+                        value={props.singledata.author}
                         disabled={true}
-                        className="d-block my-3" 
+                        className="d-block my-3 form-control" 
                     />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={(event) => {
-                            handleClose();
-                            props.deleteList(event, props.elementId);
-                        }}
-                    >
-                        Delete
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </React.Fragment>
+                </FormGroup>
+                <Button color="primary" className="mt-3" onClick={(event) => {
+                    props.deleteList(event, props.elementId);
+                    props.toggle();
+                }}>Delete</Button>{' '}
+                <Button color="secondary" className="mt-3" onClick={props.toggle}>Cancel</Button>
+            </Form>
+        </Container>
     )
 }
 

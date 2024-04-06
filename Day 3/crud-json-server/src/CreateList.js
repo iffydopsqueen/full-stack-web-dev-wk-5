@@ -32,6 +32,7 @@ function CreateList(props) {
             console.log("Item created successfully:", result);
             handleClose();
             props.reloadLists(); // Reload the lists after successful creation
+            props.navigateBack(); // Navigate back to the book list
         })
         .catch(error => {
             console.error("Error creating item:", error);
@@ -42,11 +43,11 @@ function CreateList(props) {
     return (
         <React.Fragment>
             <Button variant="primary" onClick={handleShow}>
-                Create New List
+                Add Book
             </Button>
             <Modal show={show} onHide={handleClose}>
                 <Modal.Header closeButton>
-                    <Modal.Title>New List</Modal.Title>
+                    <Modal.Title>New Book</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <input 

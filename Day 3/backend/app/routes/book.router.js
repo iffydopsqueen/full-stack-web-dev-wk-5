@@ -4,6 +4,6 @@ module.exports = function(app) {
     app.post("/api/books", books.createBook);
     app.get("/api/books/:id", books.getBook);
     app.get("/api/books", books.getBooks);
-    app.put("/api/books/:id", books.updateBook); // Fixed path for update
+    app.put("/api/books/:id", books.updateBook); 
     app.delete("/api/books/:id", books.deleteBook);
 }

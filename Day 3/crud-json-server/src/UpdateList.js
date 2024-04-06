@@ -1,89 +1,90 @@
-import React, { useState } from "react";
-import { Modal, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Button, Container, Form, FormGroup, Input, Label } from "reactstrap";
 
 function UpdateList(props) {
-    const [show, setShow] = useState(false);
-    const [formData, setFormData] = useState({}); // State to hold form data
+  const [formData, setFormData] = useState({});
+  const { id } = useParams();
 
-    const handleShow = () => {
-        setFormData(props.item); // Set initial form data when modal is shown
-        setShow(true);
-    };
+  useEffect(() => {
+    // Fetch book data based on ID
+    fetch(`/api/books/${id}`)
+      .then((res) => res.json())
+      .then((data) => setFormData(data))
+      .catch((error) => console.error("Error fetching book data:", error));
+  }, [id]);
 
-    const handleClose = () => setShow(false);
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setFormData(prevFormData => ({
-            ...prevFormData,
-            [name]: value
-        }));
-    };    
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      // Update book data
+      const response = await fetch(`/api/books/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
+      const result = await response.json();
+      console.log("Item updated successfully:", result);
+      props.updateList(id, formData);
+      props.fetchData(); // Fetch updated data
+      props.toggle(); // Close the modal
+    } catch (error) {
+      console.error("Error updating item:", error);
+    }
+  };     
 
-    const updateList = () => {
-        fetch(`/api/books/${props.item._id}`, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(res => res.json())
-        .then(result => {
-            console.log("Item updated successfully:", result);
-            handleClose(); // Close the modal
-            props.updateList(props.item._id, formData); // Pass updated data to the updateList function
-            
-            // Trigger the reload of lists by calling a callback function provided by the parent component
-            props.reloadLists(); 
-        })
-        .catch(error => {
-            console.error("Error updating item:", error);
-            handleClose(); // Close the modal
-        });
-    };          
-
-    return (
-        <React.Fragment>
-            <Button variant="primary" onClick={handleShow}>
-                Update
-            </Button>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Update List</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <input 
-                        type="text"
-                        placeholder="Title" 
-                        name="title" 
-                        value={formData.title || ""} 
-                        onChange={handleChange} 
-                        className="d-block my-3" 
-                    />
-                    <input 
-                        type="text"
-                        placeholder="Author" 
-                        name="author" 
-                        value={formData.author || ""} 
-                        onChange={handleChange} 
-                        className="d-block my-3" 
-                    />
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={updateList} 
-                    >
-                        Update
-                    </Button>
-                </Modal.Footer>
-            </Modal>
-        </React.Fragment>
-    )
+  return (
+    <Container>
+      <h2 className="mt-3">Edit Book</h2>
+      <Form onSubmit={handleSubmit}>
+        <FormGroup>
+          <Label for="title" className="h5 mt-3">
+            Book Title
+          </Label>
+          <Input
+            type="text"
+            name="title"
+            id="title"
+            value={formData.title || ""}
+            onChange={handleChange}
+            autoComplete="title"
+          />
+        </FormGroup>
+        <FormGroup>
+          <Label for="author" className="h5 mt-3">
+            Author
+          </Label>
+          <Input
+            type="text"
+            name="author"
+            id="author"
+            value={formData.author || ""}
+            onChange={handleChange}
+            autoComplete="author"
+          />
+        </FormGroup>
+        <Button color="primary" type="submit" className="mt-3">
+          Save
+        </Button>{" "}
+        <Button color="secondary" className="mt-3" onClick={props.toggle}>
+          Cancel
+        </Button>
+      </Form>
+    </Container>
+  );
 }
 
 export default UpdateList;
